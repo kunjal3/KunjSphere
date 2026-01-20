@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KunjSphere – Personal Learning Universe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkbg: "#020617",
+            card: "#020c1b",
+            accent: "#3b82f6",
+            muted: "#94a3b8",
+            borderc: "#0f172a"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-darkbg text-gray-200 min-h-screen">
+
+<!-- Navbar -->
+<nav class="bg-black border-b border-borderc px-6 py-4 flex justify-between shadow">
+  <h1 class="text-xl font-bold text-accent">KunjSphere 🌌</h1>
+  <span class="text-muted">Personal Learning Universe</span>
+</nav>
+
+<div class="flex">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-black border-r border-borderc min-h-screen p-6 space-y-4">
+    <button onclick="showSection('dashboard')" class="block w-full text-left hover:text-accent">🏠 Dashboard</button>
+    <button onclick="showSection('notice')" class="block w-full text-left hover:text-accent">📌 Notice Board</button>
+    <button onclick="showSection('learning')" class="block w-full text-left hover:text-accent">📚 Learning</button>
+    <button onclick="showSection('assessments')" class="block w-full text-left hover:text-accent">🧠 Assessments</button>
+    <button onclick="showSection('progress')" class="block w-full text-left hover:text-accent">📈 Progress</button>
+    <button onclick="showSection('settings')" class="block w-full text-left hover:text-accent">⚙️ Settings</button>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 p-6">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section">
+
+      <!-- Hero -->
+      <div class="bg-gradient-to-r from-black via-slate-900 to-blue-900 rounded-xl p-6 mb-8 shadow-lg">
+        <h2 class="text-3xl font-bold text-accent">Welcome to KunjSphere 🌌</h2>
+        <p class="mt-2 text-muted">Your personal learning universe to grow, track and conquer your goals.</p>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="text-muted">Total Tasks</h3>
+          <p id="totalTasks" class="text-2xl font-bold text-accent">0</p>
+        </div>
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="text-muted">Completed</h3>
+          <p id="completedCount" class="text-2xl font-bold text-green-400">0</p>
+        </div>
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="text-muted">Pending</h3>
+          <p id="pendingCount" class="text-2xl font-bold text-yellow-400">0</p>
+        </div>
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="text-muted">Upcoming Tests</h3>
+          <p id="testCount" class="text-2xl font-bold text-red-400">0</p>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="bg-card border border-borderc p-6 rounded-xl shadow mb-8">
+        <h3 class="text-lg font-semibold mb-3">Learning Progress</h3>
+        <div class="w-full bg-black rounded-full h-4">
+          <div id="progressBar" class="bg-accent h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="progressPercent" class="mt-2 text-sm text-muted">0% Completed</p>
+      </div>
+
+      <!-- Main Panels -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="font-semibold text-accent mb-3">📋 Today's Tasks</h3>
+          <div id="todayTasks" class="space-y-2"></div>
+        </div>
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="font-semibold text-accent mb-3">🧠 Upcoming Tests</h3>
+          <div id="upcomingTests" class="space-y-2"></div>
+        </div>
+        <div class="bg-card border border-borderc p-5 rounded-xl shadow">
+          <h3 class="font-semibold text-accent mb-3">🚀 KunjSphere Tip</h3>
+          <p class="text-muted">Consistency beats motivation. Even 30 minutes daily builds your future.</p>
+          <p class="mt-3 text-sm text-slate-500 italic">"Small steps, big impact."</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- NOTICE BOARD -->
+    <section id="notice" class="section hidden">
+      <h2 class="text-2xl text-accent mb-4">Notice Board</h2>
+      <button onclick="openNoticeModal()" class="bg-accent text-black px-3 py-2 rounded mb-4 hover:opacity-90">+ Add Notice</button>
+      <div id="noticeList" class="grid md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- LEARNING -->
+    <section id="learning" class="section hidden">
+      <h2 class="text-2xl text-accent mb-4">Learning (Completed Tasks)</h2>
+      <div id="completedTasks"></div>
+    </section>
+
+    <!-- ASSESSMENTS -->
+    <section id="assessments" class="section hidden">
+      <h2 class="text-2xl text-accent mb-4">Assessments</h2>
+      <input id="testInput" placeholder="Enter test name" class="p-2 bg-card border border-borderc rounded" />
+      <button onclick="addTest()" class="bg-accent text-black px-3 py-2 rounded hover:opacity-90">Add Test</button>
+      <div class="mt-4">
+        <h3 class="font-semibold">Upcoming</h3>
+        <div id="testList"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="progress" class="section hidden">
+      <h2 class="text-2xl text-accent mb-4">Progress</h2>
+      <p id="progressDetails"></p>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="section hidden">
+      <h2 class="text-2xl text-accent mb-4">Settings</h2>
+      <button onclick="resetData()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Reset All Data</button>
+    </section>
+
+  </main>
+</div>
+
+<!-- NOTICE MODAL -->
+<div id="noticeModal" class="fixed inset-0 bg-black bg-opacity-60 hidden justify-center items-center">
+  <div class="bg-card border border-borderc p-6 rounded w-96">
+    <textarea id="noticeInput" class="w-full bg-black border border-borderc p-2 rounded text-white" placeholder="Write notice..."></textarea>
+    <div class="mt-4 flex justify-end gap-2">
+      <button onclick="closeNoticeModal()" class="text-muted">Cancel</button>
+      <button onclick="saveNotice()" class="bg-accent text-black px-3 py-1 rounded hover:opacity-90">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
