@@ -68,8 +68,8 @@
 
   <div class="bg-card border border-borderc p-6 rounded-xl shadow mb-8">
     <h3 class="text-lg font-semibold mb-3">Learning Progress</h3>
-    <div class="w-full bg-black rounded-full h-4">
-      <div id="progressBar" class="bg-accent h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+    <div class="w-full bg-black rounded-full h-6 border border-borderc overflow-hidden">
+      <div id="progressBar" class="bg-accent h-6 rounded-full transition-all duration-500 flex items-center justify-center text-white font-semibold" style="width: 0%">0%</div>
     </div>
     <p id="progressPercent" class="mt-2 text-sm text-muted">0% Completed</p>
   </div>
@@ -77,8 +77,10 @@
   <div class="grid md:grid-cols-3 gap-6">
     <div class="bg-card border border-borderc p-5 rounded-xl shadow">
       <h3 class="font-semibold text-accent mb-3">📋 Today's Tasks</h3>
+      <input id="taskInput" placeholder="Add new task" class="p-2 w-full mb-2 bg-card border border-borderc rounded text-white"/>
+      <button id="addTaskBtn" class="bg-accent text-black px-3 py-1 rounded hover:opacity-90 mb-2">Add Task</button>
       <p id="taskError" class="text-red-400 text-sm mb-2"></p>
-      <div id="todayTasks" class="space-y-2"></div>
+      <div id="todayTasks" class="space-y-2 max-h-64 overflow-y-auto"></div>
     </div>
     <div class="bg-card border border-borderc p-5 rounded-xl shadow">
       <h3 class="font-semibold text-accent mb-3">🧠 Upcoming Tests</h3>
@@ -125,7 +127,6 @@
   <h2 class="text-2xl text-accent mb-4">Settings</h2>
   <button id="resetBtn" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Reset All Data</button>
 </section>
-
 
   </main>
 </div>
