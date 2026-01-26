@@ -2,124 +2,121 @@ let notices = JSON.parse(localStorage.getItem("notices")) || [];
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let tests = JSON.parse(localStorage.getItem("tests")) || [];
 
+const sections = document.querySelectorAll('.section');
+
 function showSection(id) {
-  document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-  renderAll();
+sections.forEach(s => s.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+renderAll();
 }
 
-/* NOTICE BOARD */
-function openNoticeModal() {
-  document.getElementById("noticeModal").classList.remove("hidden");
-}
-function closeNoticeModal() {
-  document.getElementById("noticeModal").classList.add("hidden");
-}
+document.getElementById('btnDashboard').addEventListener('click',()=>showSection('dashboard'));
+document.getElementById('btnNotice').addEventListener('click',()=>showSection('notice'));
+document.getElementById('btnLearning').addEventListener('click',()=>showSection('learning'));
+document.getElementById('btnAssessments').addEventListener('click',()=>showSection('assessments'));
+document.getElementById('btnProgress').addEventListener('click',()=>showSection('progress'));
+document.getElementById('btnSettings').addEventListener('click',()=>showSection('settings'));
+
+function openNoticeModal(){document.getElementById("noticeModal").classList.remove("hidden");}
+function closeNoticeModal(){document.getElementById("noticeModal").classList.add("hidden");}
+
+document.getElementById('addNoticeBtn').addEventListener('click',openNoticeModal);
+document.getElementById('cancelNoticeBtn').addEventListener('click',closeNoticeModal);
+document.getElementById('saveNoticeBtn').addEventListener('click',saveNotice);
+
 function saveNotice() {
-  const text = noticeInput.value.trim();
-  if (!text) return;
-  notices.push(text);
-  localStorage.setItem("notices", JSON.stringify(notices));
-  noticeInput.value = "";
-  closeNoticeModal();
-  renderNotices();
+const text = noticeInput.value.trim();
+if (!text){document.getElementById('noticeError').innerText="Notice cannot be empty";return;}
+document.getElementById('noticeError').innerText="";
+notices.push(text);
+localStorage.setItem("notices", JSON.stringify(notices));
+noticeInput.value = "";
+closeNoticeModal();
+renderNotices();
 }
+
 function renderNotices() {
-  noticeList.innerHTML = notices.map(n =>
-    `<div class="bg-card p-3 rounded">${n}</div>`
-  ).join("");
+noticeList.innerHTML = "";
+notices.forEach(n=>{
+const div=document.createElement('div');
+div.className="bg-card p-3 rounded";
+div.innerText=n;
+noticeList.appendChild(div);
+});
 }
 
-/* TASKS */
 function renderTasks() {
-  todayTasks.innerHTML = tasks.map((t, i) =>
-    `<div>
-      <input type="checkbox" ${t.done ? "checked" : ""} onclick="toggleTask(${i})">
-      ${t.name}
-    </div>`
-  ).join("");
+todayTasks.innerHTML="";
+completedTasks.innerHTML="";
 
-  completedTasks.innerHTML = tasks.filter(t => t.done).map(t => `✔️ ${t.name}`).join("<br>");
+tasks.forEach((t,i)=>{
+const div=document.createElement('div');
+const cb=document.createElement('input');cb.type="checkbox";cb.checked=t.done;
+cb.addEventListener('click',()=>toggleTask(i));
+const span=document.createElement('span');span.innerText=" "+t.name;
+div.appendChild(cb);div.appendChild(span);
+todayTasks.appendChild(div);
+if(t.done){const d=document.createElement('div');d.innerText="✔️ "+t.name;completedTasks.appendChild(d);}
+});
 }
 
-function toggleTask(i) {
-  tasks[i].done = !tasks[i].done;
-  saveTasks();
+function toggleTask(i){tasks[i].done=!tasks[i].done;saveTasks();}
+
+function addTask(name){
+if(!name.trim()){document.getElementById('taskError').innerText="Task cannot be empty";return;}
+document.getElementById('taskError').innerText="";
+tasks.push({name,done:false});saveTasks();
 }
 
-/* TESTS */
-function addTest() {
-  const name = testInput.value.trim();
-  if (!name) return;
-  tests.push({ name, done: false });
-  testInput.value = "";
-  saveTests();
-}
-function renderTests() {
-  testList.innerHTML = tests.map((t, i) =>
-    `<div>
-      <input type="checkbox" ${t.done ? "checked" : ""} onclick="toggleTest(${i})">
-      ${t.name}
-    </div>`
-  ).join("");
-
-  upcomingTests.innerHTML = tests.filter(t => !t.done).map(t => t.name).join("<br>");
-}
-function toggleTest(i) {
-  tests[i].done = !tests[i].done;
-  saveTests();
+function renderTests(){
+testList.innerHTML="";upcomingTests.innerHTML="";
+tests.forEach((t,i)=>{
+const div=document.createElement('div');
+const cb=document.createElement('input');cb.type="checkbox";cb.checked=t.done;
+cb.addEventListener('click',()=>toggleTest(i));
+const span=document.createElement('span');span.innerText=" "+t.name;
+div.appendChild(cb);div.appendChild(span);
+testList.appendChild(div);
+if(!t.done){const u=document.createElement('div');u.innerText=t.name;upcomingTests.appendChild(u);}
+});
 }
 
-/* PROGRESS */
-function renderProgress() {
-  const total = tasks.length;
-  const done = tasks.filter(t => t.done).length;
-  const pending = total - done;
-  const percent = total ? Math.round((done / total) * 100) : 0;
+function toggleTest(i){tests[i].done=!tests[i].done;saveTests();}
 
-  progressPercent.innerText = percent + "% Completed";
-  progressDetails.innerText = `Completed ${done} out of ${total} tasks`;
-
-  document.getElementById("progressBar").style.width = percent + "%";
-  document.getElementById("totalTasks").innerText = total;
-  document.getElementById("completedCount").innerText = done;
-  document.getElementById("pendingCount").innerText = pending;
-  document.getElementById("testCount").innerText = tests.filter(t => !t.done).length;
+function addTest(){
+const name=testInput.value.trim();
+if(!name){document.getElementById('testError').innerText="Test name cannot be empty";return;}
+document.getElementById('testError').innerText="";
+tests.push({name,done:false});testInput.value="";saveTests();
 }
 
+document.getElementById('addTestBtn').addEventListener('click',addTest);
 
-/* STORAGE */
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderAll();
-}
-function saveTests() {
-  localStorage.setItem("tests", JSON.stringify(tests));
-  renderAll();
-}
+function renderProgress(){
+const total=tasks.length;
+const done=tasks.filter(t=>t.done).length;
+const pending=total-done;
+const percent=total?Math.round((done/total)*100):0;
 
-/* SETTINGS */
-function resetData() {
-  if (confirm("Reset all data?")) {
-    localStorage.clear();
-    location.reload();
-  }
+progressPercent.innerText=percent+"% Completed";
+progressDetails.innerText=`Completed ${done} out of ${total} tasks`;
+progressBar.style.width=percent+"%";
+totalTasks.innerText=total;
+completedCount.innerText=done;
+pendingCount.innerText=pending;
+testCount.innerText=tests.filter(t=>!t.done).length;
 }
 
-function renderAll() {
-  renderNotices();
-  renderTasks();
-  renderTests();
-  renderProgress();
-}
+function saveTasks(){localStorage.setItem("tasks",JSON.stringify(tasks));renderAll();}
+function saveTests(){localStorage.setItem("tests",JSON.stringify(tests));renderAll();}
 
-/* INIT SAMPLE TASKS */
-if (tasks.length === 0) {
-  tasks = [
-    { name: "Revise DSA", done: false },
-    { name: "Complete React Lecture", done: false }
-  ];
-  saveTasks();
-}
+function resetData(){if(confirm("Reset all data?")){localStorage.clear();location.reload();}}
+
+document.getElementById('resetBtn').addEventListener('click',resetData);
+
+function renderAll(){renderNotices();renderTasks();renderTests();renderProgress();}
+
+if(tasks.length===0){tasks=[{name:"Revise DSA",done:false},{name:"Complete React Lecture",done:false}];saveTasks();}
 
 renderAll();
+
