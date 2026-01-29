@@ -133,8 +133,7 @@ Use Live Server (recommended)
 ## 📁 Project Structure
 
 
-kunjsphere/
-│
+kunjsphere
 ├── index.html
 ├── style.css
 ├── script.js
